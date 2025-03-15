@@ -20,6 +20,9 @@ async function list(options: ListSpacesOptions = {}): Promise<ControllerResponse
 			type: options.type || 'global',
 			status: options.status || 'current',
 			limit: options.limit,
+			// Hardcoded values for description format and icon inclusion
+			descriptionFormat: 'view' as const,
+			includeIcon: false,
 		};
 
 		logger.debug(
