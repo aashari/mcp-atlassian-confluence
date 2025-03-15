@@ -100,21 +100,46 @@ function formatSpacesList(spacesData: SpacesResponse): string {
 	const lines: string[] = ['# Confluence Spaces', ''];
 
 	spacesData.results.forEach((space, index) => {
-		lines.push(`## ${index + 1}. ${space.name}`);
-		lines.push(`- ID: ${space.id}`);
-		lines.push(`- Key: ${space.key}`);
-		lines.push(`- Type: ${space.type}`);
-		lines.push(`- Status: ${space.status}`);
+		// Format creation date
+		const createdDate = new Date(space.createdAt).toLocaleString();
 
-		if (space.description?.plain?.value) {
-			lines.push(`- Description: ${space.description.plain.value}`);
+		lines.push(`## ${index + 1}. ${space.name}`);
+		lines.push(`- **ID**: ${space.id}`);
+		lines.push(`- **Key**: ${space.key}`);
+		lines.push(`- **Type**: ${space.type}`);
+		lines.push(`- **Status**: ${space.status}`);
+		lines.push(`- **Created**: ${createdDate}`);
+		lines.push(`- **Homepage ID**: ${space.homepageId}`);
+
+		// Add description from view format if available
+		if (space.description?.view?.value) {
+			const description = space.description.view.value.trim();
+			if (description) {
+				lines.push(`- **Description**: ${description}`);
+			}
+		} else if (space.description?.plain?.value) {
+			const description = space.description.plain.value.trim();
+			if (description) {
+				lines.push(`- **Description**: ${description}`);
+			}
 		}
 
-		lines.push(`- URL: ${space._links.webui}`);
+		// Add full URL with base if available
+		const baseUrl = spacesData._links.base || '';
+		const spaceUrl = space._links.webui;
+		const fullUrl = spaceUrl.startsWith('http') ? spaceUrl : `${baseUrl}${spaceUrl}`;
+		lines.push(`- **URL**: [${space.key}](${fullUrl})`);
+
+		// Add alias if available
+		if (space.currentActiveAlias) {
+			lines.push(`- **Alias**: ${space.currentActiveAlias}`);
+		}
+
 		lines.push('');
 	});
 
 	if (spacesData._links.next) {
+		lines.push('---');
 		lines.push('*More spaces available. Please refine your search or request the next page.*');
 	}
 

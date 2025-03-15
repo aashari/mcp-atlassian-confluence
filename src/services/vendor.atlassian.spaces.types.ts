@@ -127,6 +127,7 @@ export interface Space {
 	description?: SpaceDescription;
 	icon?: SpaceIcon;
 	_links: SpaceLinks;
+	currentActiveAlias?: string;
 }
 
 /**
