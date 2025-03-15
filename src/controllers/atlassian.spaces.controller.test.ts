@@ -32,9 +32,9 @@ describe('Atlassian Spaces Controller', () => {
 			// Verify the content format
 			if (result.content !== 'No Confluence spaces found.') {
 				expect(result.content).toContain('# Confluence Spaces');
-				expect(result.content).toContain('ID:');
-				expect(result.content).toContain('Key:');
-				expect(result.content).toContain('Type:');
+				expect(result.content).toContain('**ID**');
+				expect(result.content).toContain('**Key**');
+				expect(result.content).toContain('**Type**');
 			}
 		}, 15000); // Increase timeout for API call
 	});
