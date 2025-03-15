@@ -19,10 +19,7 @@ jobs:
           cache: 'npm'
       
       - name: Install dependencies
-        run: |
-          # Remove package-lock.json and use npm install instead of npm ci to fix optional dependencies issue
-          rm -f package-lock.json
-          npm install
+        run: npm ci
       
       - name: Check formatting
         run: npm run format:check
