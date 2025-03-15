@@ -62,26 +62,26 @@ The package can also be used as a command-line tool for human interaction:
   ```
   # Confluence Spaces
 
-  ## 1. Codashop
-  - **ID**: 327682
-  - **Key**: SHOP
+  ## 1. Example Space A
+  - **ID**: 123456
+  - **Key**: EXMPL
   - **Type**: global
   - **Status**: current
-  - **Created**: 3/31/2020, 4:38:03 PM
-  - **Homepage ID**: 327749
-  - **Description**: Confluence Space created for Jira Project Codashop
-  - **URL**: [SHOP](https://example.atlassian.net/wiki/spaces/SHOP)
-  - **Alias**: SHOP
+  - **Created**: 1/1/2023, 12:00:00 PM
+  - **Homepage ID**: 123789
+  - **Description**: Example Confluence space for demonstration purposes
+  - **URL**: [EXMPL](https://example.atlassian.net/wiki/spaces/EXMPL)
+  - **Alias**: EXMPL
 
-  ## 2. Codapay
-  - **ID**: 16711683
-  - **Key**: PAY
+  ## 2. Example Space B
+  - **ID**: 789012
+  - **Key**: DEMO
   - **Type**: global
   - **Status**: current
-  - **Created**: 4/22/2020, 3:23:30 PM
-  - **Homepage ID**: 16711747
-  - **URL**: [PAY](https://example.atlassian.net/wiki/spaces/PAY)
-  - **Alias**: PAY
+  - **Created**: 2/1/2023, 10:00:00 AM
+  - **Homepage ID**: 789123
+  - **URL**: [DEMO](https://example.atlassian.net/wiki/spaces/DEMO)
+  - **Alias**: DEMO
 
   ...
   ```
@@ -93,32 +93,32 @@ The package can also be used as a command-line tool for human interaction:
   
   Example output:
   ```
-  # Confluence Space: Infrastructure
+  # Confluence Space: Example Space C
 
-  > A current global space with key `IN` created on 5/12/2020, 1:31:54 PM.
+  > A current global space with key `DOCS` created on 3/15/2023, 10:00:00 AM.
 
   ## Basic Information
-  - **ID**: 32702468
-  - **Key**: IN
+  - **ID**: 345678
+  - **Key**: DOCS
   - **Type**: global
   - **Status**: current
-  - **Created At**: 5/12/2020, 1:31:54 PM
-  - **Author ID**: 557058:2559e9b2-2b64-4abb-8623-4ff97418313e
-  - **Homepage ID**: 32702598
-  - **Current Alias**: IN
+  - **Created At**: 3/15/2023, 10:00:00 AM
+  - **Author ID**: 123456:abcd1234-abcd-1234-abcd-1234abcd1234
+  - **Homepage ID**: 345789
+  - **Current Alias**: DOCS
 
   ## Links
-  - **Web UI**: [Open in Confluence](https://example.atlassian.net/wiki/spaces/IN)
+  - **Web UI**: [Open in Confluence](https://example.atlassian.net/wiki/spaces/DOCS)
 
   ## Labels
+
   This space has the following labels:
+  - documentation
+  - example
+  - reference
 
-  - **team:documentation** (ID: 32702594)
-  - **my:favourite** (ID: 1602256984)
-
-  ---
   *Space information retrieved at 3/16/2025, 1:31:45 AM*
-  *To view this space in Confluence, visit: https://example.atlassian.net/wiki/spaces/IN*
+  *To view this space in Confluence, visit: https://example.atlassian.net/wiki/spaces/DOCS*
   ```
 
 When run without arguments, the package starts the MCP Server for AI clients:
