@@ -16,11 +16,14 @@ function register(program: Command) {
 		.argument('[ipAddress]', 'IP address to lookup (optional)')
 		.action(async (ipAddress?: string) => {
 			try {
-				logger.info(
+				logger.debug(
 					`[src/cli/ipaddress.cli.ts@get-ip-details] Fetching IP details for ${ipAddress || 'current device'}...`,
 				);
 				const result = await ipAddressController.get(ipAddress);
-				console.log(result.content);
+				logger.debug(
+					`[src/cli/ipaddress.cli.ts@get-ip-details] IP details fetched successfully`,
+					result,
+				);
 			} catch (error) {
 				logger.error(
 					'[src/cli/ipaddress.cli.ts@get-ip-details] Failed to get IP details',
