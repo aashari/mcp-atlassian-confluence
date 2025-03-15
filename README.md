@@ -62,7 +62,7 @@ To use this MCP server with Claude Desktop:
      "mcpServers": {
        "aashari/mcp-atlassian-confluence": {
          "command": "npx",
-         "args": ["-y", "DEBUG=true", "CONFLUENCE_BASE_URL=your_url", "CONFLUENCE_USERNAME=your_username", "CONFLUENCE_API_TOKEN=your_token", "aashari/mcp-atlassian-confluence"]
+         "args": ["-y", "DEBUG=true", "ATLASSIAN_SITE_NAME=your_site_name", "ATLASSIAN_USER_EMAIL=your_email", "ATLASSIAN_API_TOKEN=your_token", "aashari/mcp-atlassian-confluence"]
        }
      }
    }
@@ -109,7 +109,7 @@ To use this MCP server with Cursor AI:
    
    To pass configuration options, you can modify the command:
    ```
-   DEBUG=true CONFLUENCE_BASE_URL=your_url CONFLUENCE_USERNAME=your_username CONFLUENCE_API_TOKEN=your_token npx -y aashari/mcp-atlassian-confluence
+   DEBUG=true ATLASSIAN_SITE_NAME=your_site_name ATLASSIAN_USER_EMAIL=your_email ATLASSIAN_API_TOKEN=your_token npx -y aashari/mcp-atlassian-confluence
    ```
    
    - Click "Add"
@@ -170,15 +170,15 @@ The server supports multiple configuration methods with the following priority o
 
 1. **Direct Environment Variables**: Set environment variables directly when running the command.
    ```bash
-   DEBUG=true CONFLUENCE_BASE_URL=your_url CONFLUENCE_USERNAME=your_username CONFLUENCE_API_TOKEN=your_token npx -y aashari/mcp-atlassian-confluence
+   DEBUG=true ATLASSIAN_SITE_NAME=your_site_name ATLASSIAN_USER_EMAIL=your_email ATLASSIAN_API_TOKEN=your_token npx -y aashari/mcp-atlassian-confluence
    ```
 
 2. **.env File**: Create a `.env` file in the project root directory.
    ```
    DEBUG=true
-   CONFLUENCE_BASE_URL=your_url
-   CONFLUENCE_USERNAME=your_username
-   CONFLUENCE_API_TOKEN=your_token
+   ATLASSIAN_SITE_NAME=your_site_name
+   ATLASSIAN_USER_EMAIL=your_email
+   ATLASSIAN_API_TOKEN=your_token
    ```
 
 3. **Global Configuration File**: Create a global configuration file at `$HOME/.mcp/configs.json`.
@@ -187,9 +187,9 @@ The server supports multiple configuration methods with the following priority o
      "@aashari/mcp-atlassian-confluence": {
        "environments": {
          "DEBUG": "true",
-         "CONFLUENCE_BASE_URL": "your_url",
-         "CONFLUENCE_USERNAME": "your_username",
-         "CONFLUENCE_API_TOKEN": "your_token"
+         "ATLASSIAN_SITE_NAME": "your_site_name",
+         "ATLASSIAN_USER_EMAIL": "your_email",
+         "ATLASSIAN_API_TOKEN": "your_token"
        }
      }
    }
@@ -198,9 +198,9 @@ The server supports multiple configuration methods with the following priority o
 ### Available Configuration Options
 
 - **DEBUG**: Set to `true` to enable debug logging.
-- **CONFLUENCE_BASE_URL**: Base URL of your Confluence instance.
-- **CONFLUENCE_USERNAME**: Username for Confluence API access.
-- **CONFLUENCE_API_TOKEN**: API token for Confluence API access.
+- **ATLASSIAN_SITE_NAME**: Your Atlassian site name (e.g., for `https://example.atlassian.net`, use `example`).
+- **ATLASSIAN_USER_EMAIL**: Email address associated with your Atlassian account.
+- **ATLASSIAN_API_TOKEN**: API token for Atlassian API access.
 - **IPAPI_API_TOKEN**: API token for the IP API service (if required).
 
 ### Configuration Priority

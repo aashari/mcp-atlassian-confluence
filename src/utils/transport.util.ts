@@ -1,11 +1,12 @@
 import { logger } from './logger.util.js';
+import { config } from './config.util.js';
 
 /**
  * Interface for Atlassian API credentials
  */
 export interface AtlassianCredentials {
-	baseUrl: string;
-	username: string;
+	siteName: string;
+	userEmail: string;
 	apiToken: string;
 }
 
@@ -16,6 +17,29 @@ export interface RequestOptions {
 	method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
 	headers?: Record<string, string>;
 	body?: unknown;
+}
+
+/**
+ * Get Atlassian credentials from environment variables
+ * @returns AtlassianCredentials object or null if credentials are missing
+ */
+export function getAtlassianCredentials(): AtlassianCredentials | null {
+	const siteName = config.get('ATLASSIAN_SITE_NAME');
+	const userEmail = config.get('ATLASSIAN_USER_EMAIL');
+	const apiToken = config.get('ATLASSIAN_API_TOKEN');
+
+	if (!siteName || !userEmail || !apiToken) {
+		logger.warn(
+			'Missing Atlassian credentials. Please set ATLASSIAN_SITE_NAME, ATLASSIAN_USER_EMAIL, and ATLASSIAN_API_TOKEN environment variables.',
+		);
+		return null;
+	}
+
+	return {
+		siteName,
+		userEmail,
+		apiToken,
+	};
 }
 
 /**
@@ -30,17 +54,18 @@ export async function fetchAtlassian<T>(
 	path: string,
 	options: RequestOptions = {},
 ): Promise<T> {
-	const { baseUrl, username, apiToken } = credentials;
+	const { siteName, userEmail, apiToken } = credentials;
 
 	// Ensure path starts with a slash
 	const normalizedPath = path.startsWith('/') ? path : `/${path}`;
 
 	// Construct the full URL
+	const baseUrl = `https://${siteName}.atlassian.net`;
 	const url = `${baseUrl}${normalizedPath}`;
 
 	// Set up authentication and headers
 	const headers = {
-		Authorization: `Basic ${Buffer.from(`${username}:${apiToken}`).toString('base64')}`,
+		Authorization: `Basic ${Buffer.from(`${userEmail}:${apiToken}`).toString('base64')}`,
 		'Content-Type': 'application/json',
 		Accept: 'application/json',
 		...options.headers,
