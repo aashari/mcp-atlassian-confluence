@@ -19,7 +19,10 @@ jobs:
           cache: 'npm'
       
       - name: Install dependencies
-        run: npm ci
+        run: |
+          # Remove package-lock.json and use npm install instead of npm ci to fix optional dependencies issue
+          rm -f package-lock.json
+          npm install
       
       - name: Check formatting
         run: npm run format:check
@@ -125,7 +128,10 @@ jobs:
           scope: '@aashari'
       
       - name: Install dependencies
-        run: npm ci
+        run: |
+          # Remove package-lock.json and use npm install instead of npm ci to fix optional dependencies issue
+          rm -f package-lock.json
+          npm install
       
       - name: Download build artifact
         uses: actions/download-artifact@v4
@@ -176,16 +182,16 @@ jobs:
             
             # Get commits between versions or from previous tag to HEAD
             if git rev-parse "v$CURRENT_VERSION" >/dev/null 2>&1; then
-              git log --pretty=format:"- **%s** ([%h](https://github.com/aashari/boilerplate-mcp-server/commit/%H))" "v$PREVIOUS_VERSION"..."v$CURRENT_VERSION" > $NOTES_FILE.commits
+              git log --pretty=format:"- **%s** ([%h](https://github.com/aashari/mcp-atlassian-confluence/commit/%H))" "v$PREVIOUS_VERSION"..."v$CURRENT_VERSION" > $NOTES_FILE.commits
             else
-              git log --pretty=format:"- **%s** ([%h](https://github.com/aashari/boilerplate-mcp-server/commit/%H))" "v$PREVIOUS_VERSION"...HEAD > $NOTES_FILE.commits
+              git log --pretty=format:"- **%s** ([%h](https://github.com/aashari/mcp-atlassian-confluence/commit/%H))" "v$PREVIOUS_VERSION"...HEAD > $NOTES_FILE.commits
             fi
           else
             echo "## Changes in this release" > $NOTES_FILE
             echo "" >> $NOTES_FILE
             
             # If no previous version tag, get recent commits (last 10)
-            git log -n 10 --pretty=format:"- **%s** ([%h](https://github.com/aashari/boilerplate-mcp-server/commit/%H))" > $NOTES_FILE.commits
+            git log -n 10 --pretty=format:"- **%s** ([%h](https://github.com/aashari/mcp-atlassian-confluence/commit/%H))" > $NOTES_FILE.commits
             
             echo "" >> $NOTES_FILE
             echo "Note: This shows the 10 most recent commits as no previous version tag was found." >> $NOTES_FILE
