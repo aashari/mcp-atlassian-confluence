@@ -1,18 +1,33 @@
 import atlassianSpacesService from '../services/vendor.atlassian.spaces.service.js';
 import { logger } from '../utils/logger.util.js';
 import { SpaceDetailed, SpacesResponse } from '../services/vendor.atlassian.spaces.types.js';
+import { ListSpacesOptions, ControllerResponse } from './atlassian.spaces.type.js';
 
 /**
  * List Confluence spaces
+ * @param options Optional filter options
  * @returns Promise with formatted space list content
  */
-async function list() {
+async function list(options: ListSpacesOptions = {}): Promise<ControllerResponse> {
 	logger.debug(
 		`[src/controllers/atlassian.spaces.controller.ts@list] Listing Confluence spaces...`,
+		options,
 	);
 
 	try {
-		const spacesData = await atlassianSpacesService.list();
+		// Set default filters for status and type if not provided
+		const filters = {
+			type: options.type || 'global',
+			status: options.status || 'current',
+			limit: options.limit,
+		};
+
+		logger.debug(
+			`[src/controllers/atlassian.spaces.controller.ts@list] Using filters:`,
+			filters,
+		);
+
+		const spacesData = await atlassianSpacesService.list(filters);
 		logger.debug(
 			`[src/controllers/atlassian.spaces.controller.ts@list] Got the response from the service`,
 			spacesData,
@@ -40,7 +55,7 @@ async function list() {
  * @param id Space ID
  * @returns Promise with formatted space details content
  */
-async function get(id: string) {
+async function get(id: string): Promise<ControllerResponse> {
 	logger.debug(
 		`[src/controllers/atlassian.spaces.controller.ts@get] Getting Confluence space with ID: ${id}...`,
 	);

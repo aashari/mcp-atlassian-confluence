@@ -1,6 +1,6 @@
 {
 	"name": "@aashari/mcp-atlassian-confluence",
-	"version": "1.6.0",
+	"version": "1.7.0",
 	"description": "A Model Context Protocol (MCP) server for Atlassian Confluence integration",
 	"type": "module",
 	"main": "dist/index.cjs",

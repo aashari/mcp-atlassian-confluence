@@ -12,15 +12,24 @@ import atlassianSpacesController from '../controllers/atlassian.spaces.controlle
 
 /**
  * List Confluence spaces
- * @param args Tool arguments (currently empty as the controller takes no parameters)
+ * @param args Tool arguments (optional filters for type, status, and limit)
  * @param _extra Extra request handler information
  * @returns MCP response with formatted spaces list
  */
-async function listSpaces(_args: ListSpacesToolArgsType, _extra: RequestHandlerExtra) {
-	logger.debug(`[src/tools/atlassian.spaces.tool.ts@listSpaces] Listing Confluence spaces...`);
+async function listSpaces(args: ListSpacesToolArgsType, _extra: RequestHandlerExtra) {
+	logger.debug(
+		`[src/tools/atlassian.spaces.tool.ts@listSpaces] Listing Confluence spaces...`,
+		args,
+	);
 
 	try {
-		const message = await atlassianSpacesController.list();
+		// Pass the filter options to the controller
+		const message = await atlassianSpacesController.list({
+			type: args.type,
+			status: args.status,
+			limit: args.limit,
+		});
+
 		logger.debug(
 			`[src/tools/atlassian.spaces.tool.ts@listSpaces] Got the response from the controller`,
 			message,

@@ -5,9 +5,7 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { logger } from './utils/logger.util.js';
 import { config } from './utils/config.util.js';
 
-// We'll replace these with Confluence-specific tools and resources later
-import ipAddressTools from './tools/ipaddress.tool.js';
-import ipLookupResources from './resources/ipaddress.resource.js';
+// Import Confluence-specific tools
 import atlassianSpacesTools from './tools/atlassian.spaces.tool.js';
 import { runCli } from './cli/index.js';
 
@@ -25,14 +23,11 @@ export async function startServer(mode: 'stdio' | 'sse' = 'stdio') {
 
 	// Log the DEBUG value to verify configuration loading
 	logger.info(`[src/index.ts] DEBUG value: ${process.env.DEBUG}`);
-	logger.info(
-		`[src/index.ts] IPAPI_API_TOKEN value exists: ${Boolean(process.env.IPAPI_API_TOKEN)}`,
-	);
 	logger.info(`[src/index.ts] Config DEBUG value: ${config.get('DEBUG')}`);
 
 	serverInstance = new McpServer({
 		name: '@aashari/mcp-atlassian-confluence',
-		version: '1.6.0',
+		version: '1.7.0',
 	});
 
 	if (mode === 'stdio') {
@@ -47,15 +42,7 @@ export async function startServer(mode: 'stdio' | 'sse' = 'stdio') {
 	);
 
 	// register tools
-	ipAddressTools.register(serverInstance);
 	atlassianSpacesTools.register(serverInstance);
-
-	// register resources
-	ipLookupResources.register(serverInstance);
-
-	// TODO: Register Confluence-specific tools and resources
-	// confluenceTools.register(serverInstance);
-	// confluenceResources.register(serverInstance);
 
 	return serverInstance.connect(transportInstance).catch(err => {
 		logger.error(`[src/index.ts] Failed to start server`, err);
@@ -70,9 +57,6 @@ async function main() {
 
 	// Log the DEBUG value to verify configuration loading
 	logger.info(`[src/index.ts] DEBUG value: ${process.env.DEBUG}`);
-	logger.info(
-		`[src/index.ts] IPAPI_API_TOKEN value exists: ${Boolean(process.env.IPAPI_API_TOKEN)}`,
-	);
 	logger.info(`[src/index.ts] Config DEBUG value: ${config.get('DEBUG')}`);
 
 	// Check if arguments are provided (CLI mode)
