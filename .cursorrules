@@ -1,117 +1,139 @@
-# .cursorrules for Boilerplate MCP Server Development
+# .cursorrules for MCP Atlassian Confluence Server
 
 ## Project Context
 
-- **Project Name**: `@aashari/boilerplate-mcp-server`
-- **Version**: 1.1.2
-- **Description**: A TypeScript-based MCP (Model Context Protocol) server template for exposing IP address lookup capabilities to AI clients (e.g., Claude Desktop).
+- **Project Name**: `@aashari/mcp-atlassian-confluence`
+- **Version**: 1.0.0 (sync with `package.json` and `src/index.ts`)
+- **Description**: A TypeScript-based MCP (Model Context Protocol) server integrating Atlassian Confluence with AI clients (e.g., Claude Desktop, Cursor AI), built on the `boilerplate-mcp-server` template with added Confluence API support.
 - **Technology Stack**:
   - Node.js v22.14.0+
   - TypeScript with NodeNext module resolution
   - MCP SDK v1.7.0 (`@modelcontextprotocol/sdk`)
+  - Confluence API integration via `fetchAtlassian` (`src/utils/transport.util.ts`)
   - Bundling via `tsup` into CommonJS (`dist/index.cjs`)
-- **Last Updated**: March 14, 2025
+- **Last Updated**: March 15, 2025
 
 ## Project Setup
 
-- **Entry Point**: `src/index.ts`
-- **Build Command**: `tsup src/index.ts --format cjs --dts` (generates `dist/index.cjs`, `dist/index.d.cts`)
+- **Entry Point**: `src/index.ts` (server or CLI mode based on arguments)
+- **Build Command**: `npm run build` (`tsup src/index.ts --format cjs --dts`)
 - **Execution**:
   - Local: `npm start`
-  - Remote: `npx -y @aashari/boilerplate-mcp-server`
-- **Version Management**: Ensure consistency between `package.json` and `src/index.ts` with:
-  ```bash
-  npm run update-version <new-version>
-  ```
+  - CLI: `node dist/index.cjs <command>` (e.g., `get-ip-details`)
+  - Remote: `npx -y @aashari/mcp-atlassian-confluence`
+- **Version Management**: Use `npm run update-version <new-version>` to sync `package.json`, `src/index.ts`, and `src/cli/index.ts` (script in `scripts/update-version.js`).
 
 ## MCP Server Functionality
 
 ### Tools
 
 - **Tool Name**: `get-ip-details`
-- **Definition**: `src/tools/ipaddress.tool.ts`
-- **Parameters**: Optional `ipAddress` (validated by Zod)
-- **Returns**: Structured IP details as plain text
+  - **Definition**: `src/tools/ipaddress.tool.ts`
+  - **Parameters**: Optional `ipAddress` (Zod-validated, `src/tools/ipaddress.type.ts`)
+  - **Returns**: IP details as plain text via `ipAddressController`
+- **Planned**: Confluence-specific tools (e.g., `get-confluence-page`) to be implemented in `src/tools/`.
 
 ### Resources
 
 - **Resource Name**: `ip://current`
-- **Definition**: `src/resources/ipaddress.resource.ts`
-- **Functionality**: Provides the current device's IP details as a `text/plain` resource
+  - **Definition**: `src/resources/ipaddress.resource.ts`
+  - **Functionality**: Current device IP details as `text/plain`
+- **Planned**: Confluence resources (e.g., `confluence://page/<id>`) to be implemented in `src/resources/`.
+
+### CLI Commands
+
+- **Command**: `get-ip-details [ipAddress]`
+  - **Definition**: `src/cli/ipaddress.cli.ts`
+  - **Description**: Fetches IP details via `ipAddressController`
+- **Planned**: Confluence-specific CLI commands (e.g., `get-confluence-page`) to be added in `src/cli/`.
 
 ### Data Flow
 
-- Controllers (`src/controllers/`) handle business logic
-- Services (`src/services/`) handle external API calls (IP data from `vendor.ip-api.com`)
-- Responses formatted by controllers and returned through MCP tools and resources
+- **External APIs**:
+  - IP lookup: `src/services/vendor.ip-api.com.service.ts` (http://ip-api.com/json)
+  - Confluence: `src/utils/transport.util.ts` (Atlassian API via `fetchAtlassian`)
+- **Controllers**: `src/controllers/` processes data (e.g., `ipaddress.controller.ts`)
+- **Output**: Delivered through MCP tools, resources, or CLI
 
 ## Guidelines for AI Assistance
 
+### Confluence Integration
+
+- **API Access**: Use `fetchAtlassian` from `src/utils/transport.util.ts`:
+  ```typescript
+  const data = await fetchAtlassian(
+    { baseUrl: 'https://your-confluence-domain.atlassian.net', username, apiToken },
+    '/rest/api/content',
+  );
+  ```
+  - **Authentication**: Basic Auth with base64-encoded `username:apiToken`.
+  - **Endpoints**: Common paths include `/rest/api/content`, `/rest/api/space`.
+- **Response Handling**: Expect JSON responses; log raw responses with `logger.debug` for debugging.
+- **Error Handling**: Catch errors, log with `logger.error`, and throw descriptive messages (e.g., `Atlassian API error: 403 Forbidden`).
+
 ### Code Style
 
-- **TypeScript**: Follow strict NodeNext resolution (`tsconfig.json`)
-- **Project Structure**:
-  - Controllers (`src/controllers/`)
-  - Services (`src/services/`)
-  - Tools (`src/tools/`) – include Zod schema definitions
-  - Resources (`src/resources/`)
-  - Utilities (`src/utils/`) – shared helpers (e.g., logging)
-- **Formatting**: Adhere to Prettier rules (`.prettierrc`):
-  - Tabs: 4 spaces, use tabs
-  - Single quotes
-  - Trailing commas
-- **Documentation**: Use JSDoc comments on all public methods/functions
+- **Imports**: Use ESM syntax with `.js` extensions (e.g., `import { logger } from '../utils/logger.util.js'`).
+- **Documentation**: JSDoc all public methods (e.g., `src/utils/transport.util.ts`’s `fetchAtlassian`).
+- **Naming**: CamelCase for variables/functions, kebab-case for CLI commands.
 
 ### MCP Implementation
 
 - **Tool Registration Example**:
   ```typescript
   server.tool(
-      'get-ip-details',
-      'Fetch IP details',
-      IpAddressToolArgs.shape,
-      async (args) => {
-          const result = await ipAddressController.get(args.ipAddress);
-          return { content: [{ type: 'text', text: result.content }] };
-      },
+    'get-confluence-page',
+    'Fetch a Confluence page by ID',
+    z.object({ pageId: z.string() }),
+    async (args) => {
+      const data = await fetchAtlassian(credentials, `/rest/api/content/${args.pageId}`);
+      return { content: [{ type: 'text', text: JSON.stringify(data) }] };
+    },
   );
   ```
 - **Resource Registration Example**:
   ```typescript
   server.resource(
-      'Current IP',
-      'ip://current',
-      { description: 'Current IP details' },
-      async () => {
-          const data = await ipAddressController.get();
-          return { contents: [{ uri: 'ip://current', text: data.content, mimeType: 'text/plain' }] };
-      },
+    'Confluence Page',
+    'confluence://page/<id>',
+    { description: 'A Confluence page by ID' },
+    async (uri) => {
+      const pageId = uri.split('/').pop();
+      const data = await fetchAtlassian(credentials, `/rest/api/content/${pageId}`);
+      return { contents: [{ uri, text: data.body.storage.value, mimeType: 'text/html' }] };
+    },
   );
   ```
-- Use `logger.debug` for internal tracing and debugging
 
 ### Best Practices
 
-- **Input Validation**: Always validate inputs in controllers (IP format, optional fields)
-- **Error Handling**: Use try-catch in async methods, log via `logger.error`
-- **Version Consistency**: Sync versioning across `package.json` and `src/index.ts` using provided scripts
-- **Build Optimization**: Leverage `tsup` for efficient bundling
+- **Input Validation**: Use Zod schemas in `src/tools/*.type.ts` (e.g., `IpAddressToolArgs`).
+- **Logging**: Leverage `logger.util.ts`:
+  - `logger.debug` for API calls and responses
+  - `logger.info` for server/CLI startup
+  - `logger.error` for failures
+- **Error Handling**: Wrap async calls in try-catch, exit with `process.exit(1)` on critical failures (e.g., `src/index.ts`).
+- **Testing**: Maintain Jest tests in `src/**/*.test.ts` (e.g., `vendor.ip-api.com.test.ts`), use mocks for Confluence API calls.
 
-### Debugging & Testing
+### Development Workflow
 
-- Test using `npm run inspector` to validate STDIO transport
-- Log essential events like server start and tool/resource registration
-- Ensure the generated shebang (`#!/usr/bin/env node`) is present in `dist/index.cjs` for compatibility with `npx`
-- Run unit tests regularly (`npm test`) and verify code coverage (`npm run test:coverage`)
+- **Dev Mode**: `npm run dev` (hot reloading with `ts-node`)
+- **Debugging**: `npm run inspector` (STDIO transport testing with MCP Inspector)
+- **CI/CD**: GitHub Actions (`.github/workflows/ci-cd.yml`) handles:
+  - Formatting (`npm run format:check`)
+  - Linting (`npm run lint`)
+  - Testing (`npm test`)
+  - Building and publishing to GitHub Packages
 
-## CI/CD Workflow
+## Extending the Server
 
-- Utilize provided GitHub Actions configuration (`.github/workflows/ci-cd.yml`):
-  - Checks formatting (`prettier`)
-  - Lints (`eslint`)
-  - Builds and runs unit tests
-  - Detects and manages semantic versioning, publishing, and tagging in GitHub Packages
+- **Confluence Features**: Add tools/resources per `DEVELOPMENT.md`:
+  1. Define types (e.g., `src/services/confluence.type.ts`)
+  2. Extend `fetchAtlassian` or create a service (e.g., `src/services/confluence.service.ts`)
+  3. Add controllers (e.g., `src/controllers/confluence.controller.ts`)
+  4. Register tools/resources in `src/index.ts`
+- **Example**: IP lookup (`src/services/vendor.ip-api.com.service.ts` to `src/tools/ipaddress.tool.ts`) as a template.
 
 ## Objective
 
-Assist developers in efficiently maintaining, extending, and debugging the MCP server while following best practices and project standards.
+Assist developers in extending this MCP server with Confluence-specific functionality, maintaining the IP lookup example, and ensuring compatibility with workspace-wide standards in the root `.cursorrules`.

@@ -4,6 +4,7 @@ import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { logger } from './utils/logger.util.js';
 
+// We'll replace these with Confluence-specific tools and resources later
 import ipAddressTools from './tools/ipaddress.tool.js';
 import ipLookupResources from './resources/ipaddress.resource.js';
 import { runCli } from './cli/index.js';
@@ -13,8 +14,8 @@ let transportInstance: SSEServerTransport | StdioServerTransport | null = null;
 
 export async function startServer(mode: 'stdio' | 'sse' = 'stdio') {
 	serverInstance = new McpServer({
-		name: '@aashari/boilerplate-mcp-server',
-		version: '1.2.4',
+		name: '@aashari/mcp-atlassian-confluence',
+		version: '1.0.0',
 	});
 
 	if (mode === 'stdio') {
@@ -24,7 +25,7 @@ export async function startServer(mode: 'stdio' | 'sse' = 'stdio') {
 	}
 
 	logger.info(
-		`[src/index.ts] Starting server with ${mode.toUpperCase()} transport...`,
+		`[src/index.ts] Starting Confluence MCP server with ${mode.toUpperCase()} transport...`,
 		process.env,
 	);
 
@@ -33,6 +34,10 @@ export async function startServer(mode: 'stdio' | 'sse' = 'stdio') {
 
 	// register resources
 	ipLookupResources.register(serverInstance);
+
+	// TODO: Register Confluence-specific tools and resources
+	// confluenceTools.register(serverInstance);
+	// confluenceResources.register(serverInstance);
 
 	return serverInstance.connect(transportInstance).catch(err => {
 		logger.error(`[src/index.ts] Failed to start server`, err);

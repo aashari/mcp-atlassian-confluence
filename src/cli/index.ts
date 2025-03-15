@@ -4,10 +4,9 @@ import { logger } from '../utils/logger.util.js';
 import ipAddressCli from './ipaddress.cli.js';
 
 // Get the version from package.json
-const VERSION = '1.2.4'; // This should match the version in src/index.ts
-const NAME = '@aashari/boilerplate-mcp-server';
-const DESCRIPTION =
-	'A boilerplate Model Context Protocol (MCP) server implementation using TypeScript';
+const VERSION = '1.0.0'; // This should match the version in src/index.ts
+const NAME = '@aashari/mcp-atlassian-confluence';
+const DESCRIPTION = 'A Model Context Protocol (MCP) server for Atlassian Confluence integration';
 
 export async function runCli(args: string[]) {
 	const program = new Command();
@@ -16,6 +15,9 @@ export async function runCli(args: string[]) {
 
 	// Register CLI commands
 	ipAddressCli.register(program);
+
+	// TODO: Register Confluence-specific CLI commands
+	// confluenceCli.register(program);
 
 	// Handle unknown commands
 	program.on('command:*', operands => {
