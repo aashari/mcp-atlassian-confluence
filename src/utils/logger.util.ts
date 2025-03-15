@@ -9,6 +9,11 @@ function getTimestamp(): string {
 
 class Logger {
 	_log(level: 'info' | 'warn' | 'error' | 'debug', message: string, ...args: unknown[]) {
+		// Skip debug messages if DEBUG is not set to true
+		if (level === 'debug' && process.env.DEBUG !== 'true') {
+			return;
+		}
+
 		const timestamp = getTimestamp();
 		const prefix = `${timestamp} [${level.toUpperCase()}]`;
 		let logMessage = `${prefix} ${message}`;

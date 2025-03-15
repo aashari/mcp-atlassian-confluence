@@ -28,6 +28,60 @@ npm run build
 
 This generates `dist/index.cjs` (executable CommonJS bundle) and `dist/index.d.cts` (TypeScript declarations). The `prebuild` script (`rimraf dist`) ensures a clean `dist/` folder before each build.
 
+## Configuration System
+
+The boilerplate includes a flexible configuration system that loads settings from multiple sources with a defined priority order:
+
+1. **Direct Environment Variables**: Highest priority, set when running the command.
+2. **.env File**: Medium priority, stored in the project root.
+3. **Global Configuration File**: Lowest priority, stored at `$HOME/.mcp/configs.json`.
+
+### Using the Configuration System
+
+To access configuration values in your code, import the `config` utility:
+
+```typescript
+import { config } from '../utils/config.util.js';
+
+// Get a string value
+const apiToken = config.get('API_TOKEN');
+
+// Get a boolean value
+const isDebug = config.getBoolean('DEBUG');
+
+// Get a value with a default
+const timeout = config.get('API_TIMEOUT', '5000');
+```
+
+### Adding New Configuration Options
+
+When implementing new functionality that requires configuration:
+
+1. Document the configuration options in your code.
+2. Use the `config` utility to access the values.
+3. Provide sensible defaults for optional configuration.
+4. Update the README.md with the new configuration options.
+
+Example service using configuration:
+
+```typescript
+// src/services/example.service.ts
+import { logger } from '../utils/logger.util.js';
+import { config } from '../utils/config.util.js';
+
+async function callApi() {
+  const apiToken = config.get('EXAMPLE_API_TOKEN');
+  const apiUrl = config.get('EXAMPLE_API_URL', 'https://api.example.com');
+  
+  logger.debug(`[src/services/example.service.ts@callApi] Calling API at ${apiUrl}`);
+  
+  // Use apiToken and apiUrl to make the API call
+  // ...
+}
+
+export default { callApi };
+```
+
 ## Implementing Your Own Functionality
 
 The boilerplate includes IP address lookup functionality as an example. To add your own functionality (e.g., weather information), follow these steps:
@@ -55,12 +109,20 @@ Create a new file in `src/services/` (e.g., `weather.service.ts`) to implement A
 ```typescript
 // src/services/weather.service.ts
 import { logger } from '../utils/logger.util.js';
+import { config } from '../utils/config.util.js';
 import { WeatherData } from './weather.service.type.js';
 
 async function get(location: string): Promise<WeatherData> {
   logger.debug(`[src/services/weather.service.ts@get] Getting weather for ${location}...`);
+  
+  // Get API key from configuration
+  const apiKey = config.get('WEATHER_API_KEY');
+  const apiUrl = config.get('WEATHER_API_URL', 'https://api.weather.com/v1');
+  
   // Call a weather API here
-  // For example: const response = await fetch(`https://api.weather.com/v1/${encodeURIComponent(location)}`);
+  // For example:
+  // const url = `${apiUrl}/${encodeURIComponent(location)}?key=${apiKey}`;
+  // const response = await fetch(url);
   
   // Mock data for demonstration
   return {

@@ -119,4 +119,34 @@ try {
 	process.exit(1);
 }
 
+// Update src/utils/config.util.ts
+const configUtilPath = path.join(rootDir, 'src', 'utils', 'config.util.ts');
+try {
+	if (fs.existsSync(configUtilPath)) {
+		let configUtilContent = fs.readFileSync(configUtilPath, 'utf8');
+
+		// Get package.json again to ensure we have the data
+		const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+		const packageName = packageJson.name;
+
+		// Update package name in config loader
+		const packageNameRegex = /(new ConfigLoader\(['"])([^'"]+)(['"])/;
+		const packageNameMatch = configUtilContent.match(packageNameRegex);
+
+		if (packageNameMatch && packageName) {
+			const oldPackageName = packageNameMatch[2];
+			configUtilContent = configUtilContent.replace(packageNameRegex, `$1${packageName}$3`);
+			console.log(
+				`Updated package name in src/utils/config.util.ts: ${oldPackageName} → ${packageName}`,
+			);
+
+			// Write the updated content back to the file
+			fs.writeFileSync(configUtilPath, configUtilContent);
+		}
+	}
+} catch (error) {
+	console.error(`Error updating src/utils/config.util.ts: ${error.message}`);
+	// Don't exit, just log the error
+}
+
 console.log(`\nVersion successfully updated to ${newVersion}`);
