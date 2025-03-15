@@ -8,6 +8,7 @@ import { config } from './utils/config.util.js';
 // We'll replace these with Confluence-specific tools and resources later
 import ipAddressTools from './tools/ipaddress.tool.js';
 import ipLookupResources from './resources/ipaddress.resource.js';
+import atlassianSpacesTools from './tools/atlassian.spaces.tool.js';
 import { runCli } from './cli/index.js';
 
 let serverInstance: McpServer | null = null;
@@ -31,7 +32,7 @@ export async function startServer(mode: 'stdio' | 'sse' = 'stdio') {
 
 	serverInstance = new McpServer({
 		name: '@aashari/mcp-atlassian-confluence',
-		version: '1.5.1',
+		version: '1.6.0',
 	});
 
 	if (mode === 'stdio') {
@@ -47,6 +48,7 @@ export async function startServer(mode: 'stdio' | 'sse' = 'stdio') {
 
 	// register tools
 	ipAddressTools.register(serverInstance);
+	atlassianSpacesTools.register(serverInstance);
 
 	// register resources
 	ipLookupResources.register(serverInstance);

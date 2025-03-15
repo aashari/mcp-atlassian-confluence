@@ -2,9 +2,10 @@ import { Command } from 'commander';
 import { logger } from '../utils/logger.util.js';
 
 import ipAddressCli from './ipaddress.cli.js';
+import atlassianSpacesCli from './atlassian.spaces.cli.js';
 
 // Get the version from package.json
-const VERSION = '1.5.1'; // This should match the version in src/index.ts
+const VERSION = '1.6.0'; // This should match the version in src/index.ts
 const NAME = '@aashari/mcp-atlassian-confluence';
 const DESCRIPTION = 'A Model Context Protocol (MCP) server for Atlassian Confluence integration';
 
@@ -15,6 +16,7 @@ export async function runCli(args: string[]) {
 
 	// Register CLI commands
 	ipAddressCli.register(program);
+	atlassianSpacesCli.register(program);
 
 	// TODO: Register Confluence-specific CLI commands
 	// confluenceCli.register(program);
