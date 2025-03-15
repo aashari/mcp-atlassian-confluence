@@ -57,7 +57,7 @@ describe('Atlassian Spaces Controller', () => {
 			}
 
 			// Extract a space ID from the list result
-			const match = listResult.content.match(/ID: ([a-zA-Z0-9-]+)/);
+			const match = listResult.content.match(/\*\*ID\*\*: ([0-9]+)/);
 			if (!match || !match[1]) {
 				console.warn('Skipping test: Could not extract space ID from list result');
 				return;
@@ -72,11 +72,20 @@ describe('Atlassian Spaces Controller', () => {
 			expect(result).toHaveProperty('content');
 			expect(typeof result.content).toBe('string');
 
-			// Verify the content format
+			// Verify the content format based on example output
 			expect(result.content).toContain('# Confluence Space:');
-			expect(result.content).toContain(`ID: ${spaceId}`);
-			expect(result.content).toContain('Basic Information');
-			expect(result.content).toContain('Links');
+			expect(result.content).toContain(`**ID**: ${spaceId}`);
+			expect(result.content).toContain('**Key**:');
+			expect(result.content).toContain('**Type**:');
+			expect(result.content).toContain('**Status**:');
+			expect(result.content).toContain('**Created At**:');
+			expect(result.content).toContain('**Author ID**:');
+			expect(result.content).toContain('**Homepage ID**:');
+			expect(result.content).toContain('## Links');
+			expect(result.content).toContain('**Web UI**:');
+			expect(result.content).toContain('## Labels');
+			expect(result.content).toContain('*Space information retrieved at');
+			expect(result.content).toContain('*To view this space in Confluence, visit:');
 		}, 15000); // Increase timeout for API call
 
 		it('should handle invalid space IDs', async () => {
