@@ -8,7 +8,7 @@ A Model Context Protocol (MCP) server for Atlassian Confluence integration. This
 
 For detailed information about the Model Context Protocol (MCP), including core concepts, architecture, and implementation guides, please refer to the [official MCP documentation](https://modelcontextprotocol.io/docs/).
 
-## Features
+## Core Features
 
 This MCP server provides the following capabilities:
 
@@ -18,16 +18,107 @@ This MCP server provides the following capabilities:
   - `list-spaces`: List all available Confluence spaces with their IDs, keys, types, and URLs (defaults to current global spaces)
   - `get-space`: Get detailed information about a specific Confluence space by ID, including labels and other metadata
 
-## Fork Relationship
+## Running with npx
 
-This project extends the boilerplate-mcp-server with Atlassian Confluence integration capabilities:
+Run the server without local installation:
 
-- **Added Features**: Adds Confluence API integration via the `fetchAtlassian` utility in `src/utils/transport.util.ts`.
-- **Upstream Updates**: Maintains a remote connection to the boilerplate repository, allowing future improvements to be merged:
+```bash
+npx -y aashari/mcp-atlassian-confluence
+```
+
+This command fetches the package directly from GitHub, runs `npm run build` (via `prepare` script), and executes the server. The `-y` flag skips prompts for a seamless experience.
+
+## Using as a CLI Tool
+
+The package can also be used as a command-line tool for human interaction:
+
+- **Get help and available commands**:
   ```bash
-  # To pull in updates from the boilerplate
-  git fetch boilerplate
-  git merge boilerplate/main
+  npx -y aashari/mcp-atlassian-confluence --help
+  ```
+  
+  Example output:
+  ```
+  Usage: @aashari/mcp-atlassian-confluence [options] [command]
+
+  A Model Context Protocol (MCP) server for Atlassian Confluence integration
+
+  Options:
+    -V, --version               output the version number
+    -h, --help                  display help for command
+
+  Commands:
+    list-spaces [options]       List Confluence spaces, optionally filtered by type and status
+    get-space <spaceId>         Get details about a specific Confluence space
+    help [command]              display help for command
+  ```
+
+- **List Confluence spaces**:
+  ```bash
+  npx -y aashari/mcp-atlassian-confluence list-spaces
+  ```
+  
+  Example output:
+  ```
+  # Confluence Spaces
+
+  ## 1. Codashop
+  - **ID**: 327682
+  - **Key**: SHOP
+  - **Type**: global
+  - **Status**: current
+  - **Created**: 3/31/2020, 4:38:03 PM
+  - **Homepage ID**: 327749
+  - **Description**: Confluence Space created for Jira Project Codashop
+  - **URL**: [SHOP](https://example.atlassian.net/wiki/spaces/SHOP)
+  - **Alias**: SHOP
+
+  ## 2. Codapay
+  - **ID**: 16711683
+  - **Key**: PAY
+  - **Type**: global
+  - **Status**: current
+  - **Created**: 4/22/2020, 3:23:30 PM
+  - **Homepage ID**: 16711747
+  - **URL**: [PAY](https://example.atlassian.net/wiki/spaces/PAY)
+  - **Alias**: PAY
+
+  ...
+  ```
+
+- **Get details for a specific Confluence space**:
+  ```bash
+  npx -y aashari/mcp-atlassian-confluence get-space 32702468
+  ```
+  
+  Example output:
+  ```
+  # Confluence Space: Infrastructure
+
+  > A current global space with key `IN` created on 5/12/2020, 1:31:54 PM.
+
+  ## Basic Information
+  - **ID**: 32702468
+  - **Key**: IN
+  - **Type**: global
+  - **Status**: current
+  - **Created At**: 5/12/2020, 1:31:54 PM
+  - **Author ID**: 557058:2559e9b2-2b64-4abb-8623-4ff97418313e
+  - **Homepage ID**: 32702598
+  - **Current Alias**: IN
+
+  ## Links
+  - **Web UI**: [Open in Confluence](https://example.atlassian.net/wiki/spaces/IN)
+
+  ## Labels
+  This space has the following labels:
+
+  - **team:documentation** (ID: 32702594)
+  - **my:favourite** (ID: 1602256984)
+
+  ---
+  *Space information retrieved at 3/16/2025, 1:31:45 AM*
+  *To view this space in Confluence, visit: https://example.atlassian.net/wiki/spaces/IN*
   ```
 
 When run without arguments, the package starts the MCP Server for AI clients:
@@ -136,25 +227,6 @@ To use this MCP server with Cursor AI:
    - For example: "List all Confluence spaces" or "Get details about Confluence space with ID 123456"
    - Cursor AI will use the MCP tool to fetch and display the requested information
 
-## Project Structure
-
-This project follows a clean architecture pattern with clear separation of concerns:
-
-- **`src/index.ts`**: Main entry point, initializes the MCP server or CLI based on arguments.
-- **`src/controllers/`**: Business logic for operations.
-  - `atlassian.spaces.controller.ts`: Handles Confluence spaces operations
-  - `atlassian.spaces.type.ts`: Type definitions for the controller
-- **`src/services/`**: External API integration.
-  - `vendor.atlassian.spaces.service.ts`: Interacts with Atlassian Confluence API for spaces
-  - `vendor.atlassian.spaces.types.ts`: Type definitions for the service
-- **`src/tools/`**: MCP tool definitions with Zod schemas.
-  - `atlassian.spaces.tool.ts`: Implements MCP tools for Confluence spaces
-  - `atlassian.spaces.type.ts`: Type definitions for the tools
-- **`src/cli/`**: CLI command definitions.
-  - `atlassian.spaces.cli.ts`: Implements CLI commands for Confluence spaces
-- **`src/utils/`**: Shared utilities, including `transport.util.ts` for Confluence API integration.
-- **`dist/`**: Compiled output (generated by `tsup`).
-
 ## Prerequisites
 
 - **Node.js**: v22.14.0 or higher (specified in `.node-version` and `package.json`).
@@ -180,18 +252,6 @@ npm start
 ```
 
 This executes `node dist/index.cjs`, starting the MCP server with `stdio` transport.
-
-## Using the CLI
-
-The package also provides CLI commands for direct interaction:
-
-```bash
-# List all Confluence spaces
-npm start -- list-spaces
-
-# Get details about a specific Confluence space
-npm start -- get-space <space-id>
-```
 
 ## Configuration
 
@@ -238,6 +298,41 @@ The configuration system follows a cascading priority where values from higher p
 - Override global settings with project-specific settings in `.env`
 - Override both with command-line environment variables for temporary changes
 
+## Project Structure
+
+The project follows a clean architecture pattern with clear separation of concerns:
+
+- **`src/index.ts`**: Main entry point, initializes the MCP server or CLI based on arguments.
+- **`src/controllers/`**: Business logic for operations.
+  - `atlassian.spaces.controller.ts`: Handles Confluence spaces operations
+  - `atlassian.spaces.type.ts`: Type definitions for the controller
+- **`src/services/`**: External API integration.
+  - `vendor.atlassian.spaces.service.ts`: Interacts with Atlassian Confluence API for spaces
+  - `vendor.atlassian.spaces.types.ts`: Type definitions for the service
+- **`src/tools/`**: MCP tool definitions with Zod schemas.
+  - `atlassian.spaces.tool.ts`: Implements MCP tools for Confluence spaces
+  - `atlassian.spaces.type.ts`: Type definitions for the tools
+- **`src/cli/`**: CLI command definitions.
+  - `atlassian.spaces.cli.ts`: Implements CLI commands for Confluence spaces
+- **`src/utils/`**: Shared utilities, including `transport.util.ts` for Confluence API integration.
+- **`dist/`**: Compiled output (generated by `tsup`).
+
+## Testing
+
+Run unit tests:
+
+```bash
+npm test
+```
+
+Generate a test coverage report:
+
+```bash
+npm run test:coverage
+```
+
+Tests in `src/**/*.test.ts` verify controller and service functionality using Jest.
+
 ## Development
 
 ### Building and Running
@@ -256,6 +351,18 @@ npm start -- list-spaces
 npm run inspector
 ```
 
+### Fork Relationship
+
+This project extends the boilerplate-mcp-server with Atlassian Confluence integration capabilities:
+
+- **Added Features**: Adds Confluence API integration via the `fetchAtlassian` utility in `src/utils/transport.util.ts`.
+- **Upstream Updates**: Maintains a remote connection to the boilerplate repository, allowing future improvements to be merged:
+  ```bash
+  # To pull in updates from the boilerplate
+  git fetch boilerplate
+  git merge boilerplate/main
+  ```
+
 ### Extending with More Confluence Features
 
 The project is designed to be extended with additional Confluence-specific functionality:
@@ -266,6 +373,20 @@ The project is designed to be extended with additional Confluence-specific funct
 4. Implement CLI commands in `src/cli/` for human interaction
 
 For detailed development guidelines, see [DEVELOPMENT.md](DEVELOPMENT.md).
+
+## Version Management
+
+Update the project version across `package.json`, `src/index.ts`, and CLI constants:
+
+```bash
+npm run update-version <new-version>
+```
+
+Example: `npm run update-version 1.8.0`. This script ensures version consistency, validated against SemVer format.
+
+## Contributing
+
+Contributions are welcome! Fork the repository, make changes, and submit a pull request to `main`. Ensure tests pass and formatting/linting standards are met.
 
 ## License
 
