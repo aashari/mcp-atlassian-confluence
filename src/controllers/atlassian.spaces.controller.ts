@@ -164,34 +164,86 @@ function formatSpacesList(spacesData: SpacesResponse): string {
  * @returns Formatted string with space details
  */
 function formatSpaceDetails(spaceData: SpaceDetailed): string {
+	// Create a full URL for the space
+	const baseUrl = spaceData._links.base || '';
+	const spaceUrl = spaceData._links.webui || '';
+	const fullUrl = spaceUrl.startsWith('http') ? spaceUrl : `${baseUrl}${spaceUrl}`;
+
+	// Format creation date
+	const createdDate = new Date(spaceData.createdAt).toLocaleString();
+
 	const lines: string[] = [`# Confluence Space: ${spaceData.name}`, ''];
 
-	lines.push(`## Basic Information`);
-	lines.push(`- ID: ${spaceData.id}`);
-	lines.push(`- Key: ${spaceData.key}`);
-	lines.push(`- Type: ${spaceData.type}`);
-	lines.push(`- Status: ${spaceData.status}`);
-	lines.push(`- Created At: ${new Date(spaceData.createdAt).toLocaleString()}`);
-	lines.push(`- Author ID: ${spaceData.authorId}`);
-	lines.push(`- Homepage ID: ${spaceData.homepageId}`);
+	// Add a summary line
+	lines.push(
+		`> A ${spaceData.status} ${spaceData.type} space with key \`${spaceData.key}\` created on ${createdDate}.`,
+	);
+	lines.push('');
 
-	if (spaceData.description?.plain?.value) {
+	lines.push(`## Basic Information`);
+	lines.push(`- **ID**: ${spaceData.id}`);
+	lines.push(`- **Key**: ${spaceData.key}`);
+	lines.push(`- **Type**: ${spaceData.type}`);
+	lines.push(`- **Status**: ${spaceData.status}`);
+	lines.push(`- **Created At**: ${createdDate}`);
+	lines.push(`- **Author ID**: ${spaceData.authorId}`);
+	lines.push(`- **Homepage ID**: ${spaceData.homepageId}`);
+
+	// Add alias if available
+	if (spaceData.currentActiveAlias) {
+		lines.push(`- **Current Alias**: ${spaceData.currentActiveAlias}`);
+	}
+
+	// Add description section if available
+	if (spaceData.description?.view?.value || spaceData.description?.plain?.value) {
 		lines.push('');
 		lines.push(`## Description`);
-		lines.push(spaceData.description.plain.value);
+
+		const viewValue = spaceData.description?.view?.value;
+		const plainValue = spaceData.description?.plain?.value;
+
+		if (viewValue && viewValue.trim()) {
+			lines.push(viewValue.trim());
+		} else if (plainValue && plainValue.trim()) {
+			lines.push(plainValue.trim());
+		} else {
+			lines.push('*No description provided*');
+		}
 	}
 
 	lines.push('');
 	lines.push(`## Links`);
-	lines.push(`- Web UI: ${spaceData._links.webui}`);
+	lines.push(`- **Web UI**: [Open in Confluence](${fullUrl})`);
 
-	if (spaceData.labels && spaceData.labels.results.length > 0) {
+	// Add labels section
+	if (spaceData.labels && spaceData.labels.results) {
 		lines.push('');
 		lines.push(`## Labels`);
-		spaceData.labels.results.forEach(label => {
-			lines.push(`- ${label.name}`);
-		});
+
+		if (spaceData.labels.results.length === 0) {
+			lines.push('*No labels assigned to this space*');
+		} else {
+			lines.push('This space has the following labels:');
+			lines.push('');
+
+			spaceData.labels.results.forEach(label => {
+				const prefix = label.prefix ? `${label.prefix}:` : '';
+				lines.push(`- **${prefix}${label.name}** (ID: ${label.id})`);
+			});
+
+			// Add note about more labels if applicable
+			if (spaceData.labels.meta?.hasMore) {
+				lines.push('');
+				lines.push('*More labels are available but not shown*');
+			}
+		}
 	}
+
+	// Add a footer with helpful information
+	lines.push('');
+	lines.push('---');
+	lines.push(`*Space information retrieved at ${new Date().toLocaleString()}*`);
+	lines.push(`*To view this space in Confluence, visit: ${fullUrl}*`);
 
 	return lines.join('\n');
 }

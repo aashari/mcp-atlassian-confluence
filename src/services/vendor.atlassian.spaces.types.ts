@@ -53,6 +53,7 @@ export interface SpaceLinks {
 export interface Label {
 	id: string;
 	name: string;
+	prefix?: string;
 }
 
 /**
