@@ -64,7 +64,19 @@ async function get(id: string): Promise<ControllerResponse> {
 	);
 
 	try {
-		const spaceData = await atlassianSpacesService.get(id);
+		// Hardcoded parameters for the service call
+		const params = {
+			descriptionFormat: 'view' as const,
+			includeIcon: false,
+			includeOperations: false,
+			includePermissions: false,
+			includeRoleAssignments: false,
+			includeLabels: true,
+		};
+
+		logger.debug(`[src/controllers/atlassian.spaces.controller.ts@get] Using params:`, params);
+
+		const spaceData = await atlassianSpacesService.get(id, params);
 		logger.debug(
 			`[src/controllers/atlassian.spaces.controller.ts@get] Got the response from the service`,
 			spaceData,
