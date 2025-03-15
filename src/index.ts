@@ -31,7 +31,7 @@ export async function startServer(mode: 'stdio' | 'sse' = 'stdio') {
 
 	serverInstance = new McpServer({
 		name: '@aashari/mcp-atlassian-confluence',
-		version: '1.4.0',
+		version: '1.5.0',
 	});
 
 	if (mode === 'stdio') {

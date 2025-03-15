@@ -4,7 +4,7 @@ import { logger } from '../utils/logger.util.js';
 import ipAddressCli from './ipaddress.cli.js';
 
 // Get the version from package.json
-const VERSION = '1.4.0'; // This should match the version in src/index.ts
+const VERSION = '1.5.0'; // This should match the version in src/index.ts
 const NAME = '@aashari/mcp-atlassian-confluence';
 const DESCRIPTION = 'A Model Context Protocol (MCP) server for Atlassian Confluence integration';
 
