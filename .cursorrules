@@ -74,12 +74,12 @@
 ### Code Style
 
 - **Imports**: Use ESM syntax with `.js` extensions (e.g., `import { logger } from '../utils/logger.util.js'`).
-- **Documentation**: JSDoc all public methods (e.g., `src/utils/transport.util.ts`’s `fetchAtlassian`).
+- **Documentation**: JSDoc all public methods (e.g., `src/utils/transport.util.ts`'s `fetchAtlassian`).
 - **Naming**: CamelCase for variables/functions, kebab-case for CLI commands.
 
 ### MCP Implementation
 
-- **Tool Registration Example**:
+- **Tool Registration**:
   ```typescript
   server.tool(
     'get-confluence-page',
@@ -91,7 +91,7 @@
     },
   );
   ```
-- **Resource Registration Example**:
+- **Resource Registration**:
   ```typescript
   server.resource(
     'Confluence Page',
@@ -124,6 +124,7 @@
   - Linting (`npm run lint`)
   - Testing (`npm test`)
   - Building and publishing to GitHub Packages
+  - Auto-generating GitHub Releases with commit history
 
 ## Extending the Server
 
