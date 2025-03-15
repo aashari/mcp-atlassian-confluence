@@ -16,7 +16,7 @@ This MCP server provides the following capabilities:
 
 - **Spaces Management**:
   - `list-spaces`: List all available Confluence spaces with their IDs, keys, types, and URLs (defaults to current global spaces)
-  - `get-space`: Get detailed information about a specific Confluence space by ID
+  - `get-space`: Get detailed information about a specific Confluence space by ID, including labels and other metadata
 
 ## Fork Relationship
 

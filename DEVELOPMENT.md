@@ -136,7 +136,11 @@ The `list-spaces` tool allows listing Confluence spaces with optional filtering:
 The `get-space` tool retrieves detailed information about a specific Confluence space:
 
 - **Required Parameter**: `id` - The ID of the space to retrieve
-- **Response**: Detailed information about the space, including basic information, description, and links
+- **Response**: Detailed information about the space, including:
+  - Basic information (ID, key, type, status, creation date)
+  - Description (if available)
+  - Labels with their prefixes and IDs
+  - Links to access the space in Confluence
 
 ## Implementing New Confluence Features
 
